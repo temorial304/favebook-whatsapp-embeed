@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CSC - Whatsapp Onboarding</title>
+  <title>CSC - WhatsApp Onboarding</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -56,60 +56,71 @@
 </head>
 <body>
 
-  <!-- Logotipo -->
+  <!-- Logo -->
   <img src="logo.png" alt="DXC Technology Logo" class="logo">
 
-  <!-- Conteúdo principal -->
-  <h1>CSC - Whatsapp Onboarding</h1>
-  <h2>Bem-vindo à página de Onboarding para usuários de Whatsapp da CSC</h2>
-  <p>Clique no botão <strong>Entrar com o Facebook</strong> para iniciar sua inscrição.</p>
+  <!-- Main content -->
+  <h1>CSC - WhatsApp Onboarding</h1>
+  <h2>Welcome to the CSC WhatsApp user onboarding page</h2>
+  <p>Click the <strong>Log in with Facebook</strong> button to start your signup.</p>
 
-  <button class="facebook-button" onclick="loginWithFacebook()">Entrar com o Facebook</button>
+  <button class="facebook-button" onclick="loginWithFacebook()">
+    Log in with Facebook
+  </button>
 
   <div id="signupContainer"></div>
 
   <script>
-    window.fbAsyncInit = function() {
+    window.fbAsyncInit = function () {
       FB.init({
-        appId      : '1296084651957233',
-        cookie     : true,
-        xfbml      : false,
-        version    : 'v23.0'
+        appId: '1296084651957233',
+        cookie: true,
+        xfbml: false,
+        version: 'v23.0'
       });
     };
 
-    // Carrega SDK do Facebook
-    (function(d, s, id){
+    // Load Facebook SDK
+    (function (d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/pt_BR/sdk.js";
+      js = d.createElement(s);
+      js.id = id;
+      js.src = 'https://connect.facebook.net/en_US/sdk.js';
       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    })(document, 'script', 'facebook-jssdk');
 
     function loginWithFacebook() {
-      FB.login(function(response) {
+      FB.login(function (response) {
         if (response.authResponse) {
-          // Agora vamos buscar o business_id via Graph API
-          FB.api('/me/businesses', function(res) {
+          // Fetch the user's business ID via the Graph API
+          FB.api('/me/businesses', function (res) {
             if (res && !res.error && res.data && res.data.length > 0) {
               const userBusinessId = res.data[0].id;
 
               const appId = '1296084651957233';
               const configId = '24901743622770875';
-              const callbackUri = encodeURIComponent('https://csc-assets-6411.twil.io/home.html');
-              const signupUrl = `https://www.facebook.com/business/wa/embedded/signup/v2?` +
-                `app_id=${appId}&config_id=${configId}&actor_business_id=${userBusinessId}` +
-                `&features=mdp_embedded_signup&callback_uri=${callbackUri}&version=v19.0`;
+              const callbackUri = encodeURIComponent(
+                'https://csc-assets-6411.twil.io/home.html'
+              );
+
+              const signupUrl =
+                'https://www.facebook.com/business/wa/embedded/signup/v2?' +
+                `app_id=${appId}` +
+                `&config_id=${configId}` +
+                `&actor_business_id=${userBusinessId}` +
+                `&features=mdp_embedded_signup` +
+                `&callback_uri=${callbackUri}` +
+                `&version=v19.0`;
 
               window.open(signupUrl, '_blank');
             } else {
-              alert('Nenhuma conta de negócios encontrada para este usuário.');
-              console.error(res.error || 'Sem dados');
+              alert('No business account found for this user.');
+              console.error(res.error || 'No data returned');
             }
           });
         } else {
-          alert("Login cancelado");
+          alert('Login canceled');
         }
       }, {
         scope: 'business_management,whatsapp_business_management,whatsapp_business_messaging'
