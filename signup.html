@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Embedded Signup</title>
+</head>
+<body>
+  <h1>Onboard via WhatsApp Embedded Signup</h1>
+  <p>Click below to begin the registration process through the WhatsApp Business platform:</p>
+
+  <button
+    id="waSignupBtn"
+    style="
+      background-color: #1877f2;
+      border: 0;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      height: 40px;
+      padding: 0 24px;
+    "
+  >
+    Start WhatsApp Signup
+  </button>
+
+  <!-- Load Facebook SDK -->
+  <script
+    async
+    defer
+    crossorigin="anonymous"
+    src="https://connect.facebook.net/en_US/sdk.js"
+  ></script>
+
+  <script>
+    // Replace with your Graph API version (for example: "v21.0")
+    const GRAPH_API_VERSION = 'v21.0';
+
+    // Your App details
+    const APP_ID = '1296084651957233';
+
+    // NEVER expose your App Secret on the client side — this is critical for security
+    const CONFIG_ID = '24901743622770875';
+
+    // Called once the Facebook SDK is loaded
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: APP_ID,
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: GRAPH_API_VERSION
+      });
+    };
+
+    // Listener to capture messages from the embedded iframe / popup
+    window.addEventListener('message', (event) => {
+      // Validate origin
+      if (
+        event.origin !== 'https://www.facebook.com' &&
+        event.origin !== 'https://web.facebook.com'
+      ) {
+        return;
+      }
+
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'WA_EMBEDDED_SIGNUP') {
+          console.log('Embedded Signup message event:', data);
+
+          // Send this data to your backend for processing if needed
+          // Example:
+          // fetch('/webhook-signup-callback', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify(data)
+          // });
+        }
+      } catch (err) {
+        console.warn('Failed to parse event.data:', event.data);
+      }
+    });
+
+    // Callback for FB.login
+    function fbLoginCallback(response) {
+      if (response.authResponse) {
+        const code = response.authResponse.code;
+        console.log('Received auth code:', code);
+
+        // Send the `code` to your backend to exchange it for a token
+        // using client_id + client_secret
+        // Example:
+        // fetch('/exchange-code', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ code })
+        // });
+      } else {
+        console.warn('No authResponse received:', response);
+      }
+    }
+
+    // Launch the WhatsApp Embedded Signup flow
+    function launchWhatsAppSignup() {
+      FB.login(fbLoginCallback, {
+        config_id: CONFIG_ID,
+        response_type: 'code',
+        override_default_response_type: true,
+        extras: {
+          setup: {
+            // Optional: pre-fill data for the user
+            // Example:
+            // business_name: 'My Company Inc.'
+          },
+          featureType: '',
+          sessionInfoVersion: '3'
+        }
+      });
+    }
+
+    // Attach click handler to the button
+    document
+      .getElementById('waSignupBtn')
+      .addEventListener('click', launchWhatsAppSignup);
+  </script>
+</body>
+</html>
