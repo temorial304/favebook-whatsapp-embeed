@@ -1,2 +1,2 @@
 # wpp-signup
-Página para integração do WhatsApp via Facebook Embedded Signup
+Page for integrating WhatsApp via Facebook Embedded Signup
